@@ -4,7 +4,6 @@ import os
 
 from marker.tinyconvert import convert_single_pdf
 from marker.logger import configure_logging
-from marker.tinymodels import load_all_models
 
 from marker.output import save_markdown
 
@@ -21,14 +20,13 @@ def main():
     args = parser.parse_args()
 
     langs = args.langs.split(",") if args.langs else None
-    print("=====langs:" + str(langs))
 
     fname = args.filename
-    # model_lst = load_all_models()
+    model_lst = []  # empty this list because we use overridden tinymodels.conver_single_pdf()
     full_text, images, out_meta = convert_single_pdf(fname, [], max_pages=args.max_pages, langs=langs, batch_multiplier=args.batch_multiplier)
 
     fname = os.path.basename(fname)
-    # subfolder_path = save_markdown(args.output, fname, full_text, images, out_meta)
+    subfolder_path = save_markdown(args.output, fname, full_text, images, out_meta)
 
     print(f"Saved markdown to the {fname}")
 

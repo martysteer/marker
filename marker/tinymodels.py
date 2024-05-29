@@ -60,11 +60,3 @@ def setup_order_model(device=None, dtype=None):
     processor = load_order_processor()
     model.processor = processor
     return model
-
-
-def load_all_models():
-    '''Override marker.models.load_all_models(). This function
-    loads all models into memory at once. I want to control that memory allocation in
-    the tiny_single_convert() function.
-    '''
-    return []

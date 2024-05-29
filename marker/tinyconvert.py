@@ -25,7 +25,9 @@ from marker.postprocessors.markdown import merge_spans, merge_lines, get_full_te
 from marker.cleaners.text import cleanup_text
 from marker.images.extract import extract_images
 from marker.images.save import images_to_dict
+
 from marker.tinymodels import setup_recognition_model, setup_detection_model, setup_texify_model, setup_layout_model, setup_order_model
+from marker.postprocessors.editor import load_editing_model
 
 from typing import List, Dict, Tuple, Optional
 from marker.settings import settings
@@ -48,8 +50,6 @@ def convert_single_pdf(
 
     langs = replace_langs_with_codes(langs)
     validate_langs(langs)
-    print("=====conver_single langs:" + str(langs))
-
 
     # Find the filetype
     filetype = find_filetype(fname)
