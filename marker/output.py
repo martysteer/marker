@@ -3,14 +3,14 @@ import json
 
 
 def get_subfolder_path(out_folder, fname):
-    subfolder_name = fname.split(".")[0]
+    subfolder_name = os.path.splitext(fname)[0]
     subfolder_path = os.path.join(out_folder, subfolder_name)
     return subfolder_path
 
 
 def get_markdown_filepath(out_folder, fname):
     subfolder_path = get_subfolder_path(out_folder, fname)
-    out_filename = fname.rsplit(".", 1)[0] + ".md"
+    out_filename = os.path.splitext(fname)[0] + ".md"
     out_filename = os.path.join(subfolder_path, out_filename)
     return out_filename
 
