@@ -1,7 +1,7 @@
 from marker.images.save import get_image_filename
 from marker.pdf.images import render_bbox_image
 from marker.schema.bbox import rescale_bbox
-from marker.schema.block import find_insert_block, Span, Line
+from marker.schema.block import find_insert_block, Span, Line, Block
 from marker.settings import settings
 
 
@@ -39,7 +39,6 @@ def extract_page_images(page_obj, page):
     image_blocks = find_image_blocks(page)
 
     for image_idx, (block_idx, line_idx, bbox) in enumerate(image_blocks):
-        block = page.blocks[block_idx]
         image = render_bbox_image(page_obj, page, bbox)
         image_filename = get_image_filename(page, image_idx)
         image_markdown = f"\n\n![{image_filename}]({image_filename})\n\n"
@@ -54,17 +53,38 @@ def extract_page_images(page_obj, page):
             span_id=f"image_{image_idx}"
         )
 
-        # Sometimes, the block has zero lines
-        if len(block.lines) > line_idx:
-            block.lines[line_idx].spans.append(image_span)
-        else:
-            line = Line(
-                bbox=bbox,
-                spans=[image_span]
-            )
-            block.lines.append(line)
-        page.images.append(image)
+        # Logic to add image to page.images and page.blocks.lines
+        # accommodating for empty page.blocks[] and empty block.lines[]
+        try:
+            block = page.blocks[block_idx]
 
+            # Sometimes, the block has zero lines
+            if len(block.lines) > line_idx:
+                block.lines[line_idx].spans.append(image_span)
+            else:  # add our own line with the image object in it
+                line = Line(
+                    bbox=bbox,
+                    spans=[image_span]
+                )
+                block.lines.append(line)
+
+        except IndexError: 
+            # No text blocks on this page usually means a full page image.
+            # So we add our own text block containing the image/markdown span
+            line = Line(
+                    bbox=bbox,
+                    spans=[image_span]
+            )
+            block = Block(
+                lines=[line],
+                bbox=bbox,
+                pnum=0
+            )
+            page.blocks.append(block)
+
+        finally:  # always add the image to the page object
+            page.images.append(image)
+            
 
 def extract_images(doc, pages):
     for page_idx, page in enumerate(pages):
