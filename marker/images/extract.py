@@ -78,7 +78,8 @@ def extract_page_images(page_obj, page):
             block = Block(
                 lines=[line],
                 bbox=bbox,
-                pnum=0
+                pnum=0,
+                block_type='Picture'
             )
             page.blocks.append(block)
 
